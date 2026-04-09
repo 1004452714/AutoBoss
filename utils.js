@@ -14,3 +14,5 @@ function getToday() {
 function isToday(date) {
     return date === getToday();
 }
+
+export { getToday, isToday };

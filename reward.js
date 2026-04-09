@@ -154,3 +154,5 @@ async function takeReward(isInsufficientResin) {
     }
 
 }
+
+export { autoNavigateToReward, takeReward };

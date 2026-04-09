@@ -1,5 +1,5 @@
-eval(file.readTextSync("reward.js"));
-eval(file.readTextSync("utils.js"));
+import { autoNavigateToReward, takeReward } from "./reward.js";
+import { getToday, isToday } from "./utils.js";
 (async function () {
     const FARM_MODES = {
         ONCE: "一次性",

@@ -5,13 +5,17 @@
   "description": "一次性配置多个角色材料的boss，体力不足时保存进度，每次运行时断点续打",
   "authors": [
     {
-      "name": "无激情非少年",
+      "name": "DarkFlameMaster",
       "links": "https://github.com/1004452714"
     }
+  ],
+  "library": [
+    "."
   ],
   "settings_ui": "settings.json",
   "main": "main.js",
    "saved_files": [
-    "assets/config"
+    "assets/config",
+    "user"
   ]
 }
