@@ -198,7 +198,7 @@ jobs:
       - name: 使用GitHub API创建PR
         if: steps.check-changes.outputs.has_changes == 'true'
         run: |
-          PR_BODY="同步[${{ env.SCRIPT_NAME }}](https://github.com/${{ env.FORK_REPO }}/commits/main/)仓库的更新"
+          PR_BODY="同步[${{ env.SCRIPT_NAME }}](https://github.com/${{ github.repository }}/commits/main/)仓库的更新"
           if [ "${{ steps.get-commit-messages.outputs.has_commits }}" = "true" ]; then
             PR_BODY="${PR_BODY}
           
