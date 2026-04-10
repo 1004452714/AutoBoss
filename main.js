@@ -316,10 +316,10 @@ import { runAutoFight } from "./src/auto-fight.js";
         const runMode = settings.runMode;
         // === 执行对应操作 ===
         const RUN_MODES = {
-            ADD_BOSS: "追加指定Boss及相关配置",
-            REMOVE_BOSS: "删除同名Boss及相关配置",
-            CLEAR_ALL: "！！删除所有BOSS！！",
-            RUN: "运行"
+            ADD_BOSS: "2.追加指定Boss",
+            REMOVE_BOSS: "3.删除同名Boss",
+            CLEAR_ALL: "4.删除所有BOSS",
+            RUN: "1.运行"
         };
 
         if (runMode === RUN_MODES.ADD_BOSS) {

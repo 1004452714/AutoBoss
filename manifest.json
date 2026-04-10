@@ -14,8 +14,7 @@
   ],
   "settings_ui": "settings.json",
   "main": "main.js",
-   "saved_files": [
-    "assets/config",
-    "user"
+  "saved_files": [
+    "assets/config"
   ]
 }
