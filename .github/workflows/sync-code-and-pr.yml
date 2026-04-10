@@ -2,13 +2,15 @@ name: 同步代码并创建PR
 
 # ====== 可复用配置（修改此处即可适配新项目）======
 env:
-  # 必填配置：每个新项目必须修改这4项
-  FORK_REPO: "1004452714/bettergi-scripts-list"    # 你的 Fork 仓库名
+  # 必填配置：每个新项目必须修改这6项
+  FORK_REPO: "1004452714/bettergi-scripts-list"    # Fork 仓库完整名称
+  FORK_OWNER: "1004452714"                         # Fork 仓库的用户名/组织名（用于跨仓库PR）
   UPSTREAM_REPO: "babalae/bettergi-scripts-list"   # 上游原始仓库名
-  TARGET_DIR: "repo/js/批量讨伐角色养成材料BOSS"              # Fork 仓库中你的脚本所在目录
-  SCRIPT_NAME: "批量讨伐角色养成材料BOSS"                     # 脚本名称（用于分支名和PR标题）
+  TARGET_DIR: "repo/js/批量讨伐角色养成材料BOSS"   # Fork 仓库中你的脚本所在目录
+  BRANCH_NAME: "auto-boss"                         # 分支名中的脚本标识（不含时间戳）
+  SCRIPT_NAME: "批量讨伐角色养成材料BOSS"          # 脚本显示名称（用于PR标题）
   
-  # 可选配置：通常使用默认值即可
+  # 可选配置：根据需要修改
   BRANCH_PREFIX: "sync-"                           # 创建分支时的前缀
   BASE_BRANCH: "main"                              # PR 的目标分支
 
@@ -136,7 +138,7 @@ jobs:
       - name: 创建唯一分支名
         id: create-branch-name
         run: |
-          BRANCH_NAME="${{ env.BRANCH_PREFIX }}${{ env.SCRIPT_NAME }}-$(date +%Y%m%d%H%M%S)"
+          BRANCH_NAME="${{ env.BRANCH_PREFIX }}${{ env.BRANCH_NAME }}-$(date +%Y%m%d%H%M%S)"
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
       - name: 在fork仓库中创建新分支
@@ -208,7 +210,7 @@ jobs:
           
           if [ "${{ github.event.inputs.pr_target }}" = "upstream" ]; then
             TARGET_REPO="${{ env.UPSTREAM_REPO }}"
-            HEAD_BRANCH="${{ env.FORK_REPO }}:${{ steps.create-branch-name.outputs.branch_name }}"
+            HEAD_BRANCH="${{ env.FORK_OWNER }}:${{ steps.create-branch-name.outputs.branch_name }}"
           else
             TARGET_REPO="${{ env.FORK_REPO }}"
             HEAD_BRANCH="${{ steps.create-branch-name.outputs.branch_name }}"
