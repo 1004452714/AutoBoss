@@ -1,5 +1,6 @@
-import { autoNavigateToReward, takeReward } from "./reward.js";
-import { getToday, isToday } from "./utils.js";
+import { autoNavigateToReward, takeReward } from "./src/reward.js";
+import { getToday, isToday } from "./src/utils.js";
+import { runAutoFight } from "./src/auto-fight.js";
 (async function () {
     const FARM_MODES = {
         ONCE: "一次性",
@@ -168,10 +169,6 @@ import { getToday, isToday } from "./utils.js";
                         await genshin.switchParty(boss.team);
                     };
 
-                    // --- 初始化自定战斗参数 ---
-                    // let fightParam = new AutoFightParam(boss.fightParam.strategyName)
-                    // fightParam.timeout = boss.fightParam.timeout;
-
                     let remainingCount
                     if (boss.farmMode === FARM_MODES.DAILY_LIMIT || boss.farmMode === FARM_MODES.DAILY) {
                         remainingCount = boss.dailyRemainingCount
@@ -208,8 +205,7 @@ import { getToday, isToday } from "./utils.js";
                             try {
 
                                 log.info(`⚔️开始第 {round} 次讨伐的第 {attempt} 尝试`,round,attempt);
-                                await dispatcher.runTask(new SoloTask("AutoFight"));
-                                // await dispatcher.runAutoFightTask(fightParam);
+                                await runAutoFight(boss.fightParam);
                                 await autoNavigateToReward();
                                 isInsufficientResin = await takeReward(isInsufficientResin);
                                 battleSuccess = true;
