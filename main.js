@@ -10,7 +10,7 @@ import { getToday, isToday } from "./utils.js";
         /**
          * 追加Boss配置
          */
-        async function addBoss() {
+        function addBoss() {
             //总次数
             const rounds = parseInt(settings.rounds, 10);
             if (isNaN(rounds) || rounds < 0) {
@@ -32,7 +32,7 @@ import { getToday, isToday } from "./utils.js";
                 log.warn(`⚠️无效的超时时间: {timeout}，将使用 240 秒作为默认值。`, settings.timeout)
                 timeout = 240;
             }
-
+            let farmMode = null;
             // 刷取模式
             if (settings.farmMode === FARM_MODES.ONCE) {
                 farmMode = FARM_MODES.ONCE
