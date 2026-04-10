@@ -7,6 +7,28 @@ import { runAutoFight } from "./src/auto-fight.js";
         DAILY_LIMIT: "一次性-每日限量",
         DAILY: "每日重置"
     };
+
+    /**
+     * 需要战斗后重新对话开启战斗的 Boss 列表
+     * (Talk to Start 战斗类型)
+     */
+    const BOSS_TALK_TO_START = [
+        "歌裴莉娅的葬送",
+        "科培琉司的劫罚",
+        "纯水精灵",
+        "重拳出击鸭"
+    ];
+
+    /**
+     * 未支持地图自动寻路的 Boss 列表
+     * (需要使用键鼠手动寻路)
+     */
+    const BOSS_NO_PATHING_SUPPORT = [
+        "蕴光月守宫",
+        "超重型陆巡舰·机动战垒",
+        "蕴光月幻蝶"
+    ];
+
     try {
         /**
          * 追加Boss配置
@@ -200,7 +222,13 @@ import { runAutoFight } from "./src/auto-fight.js";
                             };
                             if (goToBoss) {
                                 log.info(`🏃前往『{name}』`,boss.name);
-                                await pathingScript.runFile(`assets/Pathing/${boss.name}前往.json`);
+                                if (BOSS_NO_PATHING_SUPPORT.includes(boss.name)) {
+                                    //分层地图未适配区域的BOSS,使用键鼠寻路
+                                    await pathingScript.runFile(`assets/Pathing/${boss.name}强制传送.json`);
+                                    await keyMouseScript.runFile(`assets/Pathing/${boss.name}键鼠前往.json`);
+                                } else {
+                                    await pathingScript.runFile(`assets/Pathing/${boss.name}前往.json`);
+                                }
                             };
                             try {
 
@@ -242,11 +270,23 @@ import { runAutoFight } from "./src/auto-fight.js";
                         };
 
                         if (!goToBoss && boss.remainingCount > 0 && !isInsufficientResin) {
-                            if (["歌裴莉娅的葬送", "科培琉司的劫罚", "纯水精灵","霜夜巡天灵主","重拳出击鸭"].includes(boss.name)) {
+                            if (BOSS_TALK_TO_START.includes(boss.name)) {
+                                //战斗后重新对话交互开启战斗
                                 await pathingScript.runFile(`assets/Pathing/${boss.name}战斗后快速前往.json`);
+                            
+                            } else if (BOSS_NO_PATHING_SUPPORT.includes(boss.name)) {
+                                //分层地图未适配区域的BOSS,重新寻路来靠近BOSS位置
+                                await pathingScript.runFile(`assets/Pathing/${boss.name}强制传送.json`);
+                                await keyMouseScript.runFile(`assets/Pathing/${boss.name}键鼠前往.json`);
+                            
                             } else {
-                                log.debug("等待5s后BOSS刷新");
-                                await sleep(5000);
+                                log.info("重新靠近BOSS位置并等待4s");
+                                // 读取boss前往路径文件，获取最后一个位置点
+                                const pathingData = JSON.parse(file.readTextSync(`assets/Pathing/${boss.name}前往.json`));
+                                const lastPosition = pathingData.positions[pathingData.positions.length - 1];
+                                const pathingJson = JSON.stringify({ positions: [lastPosition] });
+                                await pathingScript.run(pathingJson);
+                                await sleep(4000);
                             };
                         };
                     }
