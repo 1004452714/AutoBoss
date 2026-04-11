@@ -150,7 +150,8 @@ async function takeReward(isInsufficientResin) {
         }
         throw new Error('领取奖励超时');
     } catch (error) {
-        log.error(`领取奖励失败: ${error}`);
+        log.error(`领取奖励失败: ${error.message}`);
+        throw error;
     }
 
 }
