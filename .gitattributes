@@ -1,6 +1,6 @@
-*.txt  text eol=crlf working-tree-encoding=UTF-8
-*.json text eol=crlf working-tree-encoding=UTF-8
-*.js   text eol=crlf working-tree-encoding=UTF-8
-*.md   text eol=crlf working-tree-encoding=UTF-8
+*.txt  text eol=crlf working-tree-encoding=UTF-8 no-bom
+*.json text eol=crlf working-tree-encoding=UTF-8 no-bom
+*.js   text eol=crlf working-tree-encoding=UTF-8 no-bom
+*.md   text eol=crlf working-tree-encoding=UTF-8 no-bom
 
 *      text=auto
