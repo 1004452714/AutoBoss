@@ -142,9 +142,6 @@ async function takeReward(isInsufficientResin) {
                 return isInsufficientResin;
             }
             captureRegion.dispose();
-            rewardTextArea.Dispose();
-            useTextArea.Dispose();
-            closeRewardUi.Dispose();
             await sleep(500);
 
         }

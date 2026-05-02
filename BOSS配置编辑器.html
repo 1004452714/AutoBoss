@@ -590,8 +590,6 @@
                         <label for="returnToStatueAfterEachRound" style="display: inline; margin-bottom: 0;">每轮结束后回到七天神像回血</label>
                     </div>
                 </div>
-
-                </div>
             </div>
         </div>
     </div>
@@ -799,13 +797,18 @@
             if (selectedIndex < 0 || selectedIndex >= bossConfigs.length) return;
 
             const name = bossNameInput.value;
-            const totalCount = parseInt(document.getElementById('totalCount').value) || 20;
-            const remainingCount = parseInt(document.getElementById('remainingCount').value) || 20;
+            let parsedTotal = parseInt(document.getElementById('totalCount').value, 10);
+            const totalCount = Number.isNaN(parsedTotal) ? 20 : parsedTotal;
+            let parsedRemaining = parseInt(document.getElementById('remainingCount').value, 10);
+            const remainingCount = Number.isNaN(parsedRemaining) ? 20 : parsedRemaining;
             const team = document.getElementById('team').value || '不切换';
             const farmMode = document.getElementById('farmMode').value;
-            const dailyLimitCount = parseInt(document.getElementById('dailyLimitCount').value) || 1;
-            const dailyRemainingCount = parseInt(document.getElementById('dailyRemainingCount').value) || 1;
-            const timeout = parseInt(document.getElementById('timeout').value) || 240;
+            let parsedDailyLimit = parseInt(document.getElementById('dailyLimitCount').value, 10);
+            const dailyLimitCount = Number.isNaN(parsedDailyLimit) ? 1 : parsedDailyLimit;
+            let parsedDailyRemaining = parseInt(document.getElementById('dailyRemainingCount').value, 10);
+            const dailyRemainingCount = Number.isNaN(parsedDailyRemaining) ? 1 : parsedDailyRemaining;
+            let parsedTimeout = parseInt(document.getElementById('timeout').value, 10);
+            const timeout = Number.isNaN(parsedTimeout) ? 240 : parsedTimeout;
             const returnToStatueAfterEachRound = document.getElementById('returnToStatueAfterEachRound').checked;
 
             const strategyNameInput = document.getElementById('strategyName').value.trim();
@@ -925,10 +928,16 @@
                 item.draggable = true;
                 item.dataset.index = index;
 
-                item.innerHTML = `
-                    <span class="drag-handle">|||</span>
-                    <span class="boss-name">${config.name}</span>
-                `;
+                const dragHandle = document.createElement('span');
+                dragHandle.className = 'drag-handle';
+                dragHandle.textContent = '|||';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'boss-name';
+                nameSpan.textContent = config.name;
+
+                item.appendChild(dragHandle);
+                item.appendChild(nameSpan);
 
                 item.addEventListener('click', () => selectBoss(index));
                 item.addEventListener('dragstart', handleDragStart);
@@ -948,13 +957,18 @@
             if (index >= 0 && index < bossConfigs.length) {
                 const config = bossConfigs[index];
                 bossNameInput.value = config.name;
-                document.getElementById('totalCount').value = config.totalCount || 20;
-                document.getElementById('remainingCount').value = config.remainingCount || 20;
+                let parsedTotal = parseInt(config.totalCount, 10);
+                document.getElementById('totalCount').value = Number.isNaN(parsedTotal) ? 20 : parsedTotal;
+                let parsedRemaining = parseInt(config.remainingCount, 10);
+                document.getElementById('remainingCount').value = Number.isNaN(parsedRemaining) ? 20 : parsedRemaining;
                 document.getElementById('team').value = config.team || '不切换';
                 document.getElementById('farmMode').value = config.farmMode || '一次性-每日限量';
-                document.getElementById('dailyLimitCount').value = config.dailyLimitCount || 1;
-                document.getElementById('dailyRemainingCount').value = config.dailyRemainingCount || 1;
-                document.getElementById('timeout').value = config.fightParam?.timeout || 240;
+                let parsedDailyLimit = parseInt(config.dailyLimitCount, 10);
+                document.getElementById('dailyLimitCount').value = Number.isNaN(parsedDailyLimit) ? 1 : parsedDailyLimit;
+                let parsedDailyRemaining = parseInt(config.dailyRemainingCount, 10);
+                document.getElementById('dailyRemainingCount').value = Number.isNaN(parsedDailyRemaining) ? 1 : parsedDailyRemaining;
+                let parsedTimeout = parseInt(config.fightParam?.timeout, 10);
+                document.getElementById('timeout').value = Number.isNaN(parsedTimeout) ? 240 : parsedTimeout;
                 document.getElementById('returnToStatueAfterEachRound').checked = config.returnToStatueAfterEachRound || false;
 
                 const strategyName = config.fightParam?.strategyName || '';
@@ -1022,14 +1036,14 @@
 
         function handleDragStart(e) {
             e.stopPropagation();
-            draggedIndex = parseInt(e.target.dataset.index);
-            e.target.classList.add('dragging');
+            draggedIndex = parseInt(e.currentTarget.dataset.index);
+            e.currentTarget.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
         }
 
         function handleDragEnd(e) {
             e.stopPropagation();
-            e.target.classList.remove('dragging');
+            e.currentTarget.classList.remove('dragging');
             document.querySelectorAll('.boss-item').forEach(item => {
                 item.classList.remove('drag-over');
             });
