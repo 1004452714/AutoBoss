@@ -676,30 +676,22 @@
     </div>
 
     <script>
-        const BOSS_CASCADE_DATA = {
-            '蒙德': ['急冻树', '无相之雷', '无相之风（未支持）', '无相之冰（未支持）', '守望者·堕天'],
-            '璃月': ['爆炎树', '纯水精灵', '古岩龙蜥', '无相之岩', '遗迹巨蛇', '隐山猊兽'],
-            '稻妻': ['无相之火', '恒常机关阵列', '雷音权现', '魔偶剑鬼', '无相之水', '黄金王兽（未支持）', '深海龙蜥之群（未支持）'],
-            '须弥': ['掣电树', '半永恒统辖矩阵', '翠翎恐蕈', '风蚀沙虫', '无相之草', '深罪浸礼者', '兆载永劫龙兽'],
-            '枫丹': ['歌裴莉娅的葬送', '科培琉司的劫罚', '实验性场力发生装置', '魔像督军', '千年珍珠骏麟', '水形幻人', '铁甲熔火帝皇'],
-            '纳塔': ['金焰绒翼龙暴君', '灵觉隐修的迷者', '秘源机兵·构型械', '秘源机兵·统御械', '熔岩辉龙像', '深邃摹结株', '贪食匿叶龙山王'],
-            '挪德卡莱': ['蕴光月守宫', '深黯魇语之主', '超重型陆巡舰·机动战垒', '霜夜巡天灵主', '蕴光月幻蝶', '重拳出击鸭']
-        };
-
-        const UNSUPPORTED_BOSSES = [
-            '无相之风', '无相之风（未支持）',
-            '黄金王兽', '黄金王兽（未支持）',
-            '无相之冰', '无相之冰（未支持）',
-            '深海龙蜥之群', '深海龙蜥之群（未支持）'
-        ];
-
+        let BOSS_CASCADE_DATA = {};
+        let UNSUPPORTED_BOSSES = [];
         let bossConfigs = [];
         let selectedIndex = -1;
-        let selectedRegion = Object.keys(BOSS_CASCADE_DATA)[0];
+        let selectedRegion = '';
         
         // 策略文件浏览器相关状态
         let strategyTreeData = null;
         let currentSelectedStrategy = '';
+
+        function isUnsupported(bossName) {
+            var baseName = bossName.replace(/（未支持）$/, '');
+            return UNSUPPORTED_BOSSES.some(function(unsupported) {
+                return baseName === unsupported || bossName.includes(unsupported);
+            });
+        }
 
         const bossList = document.getElementById('bossList');
         const editPlaceholder = document.getElementById('editPlaceholder');
@@ -790,7 +782,7 @@
             bossNameInput.value = bossName;
             closeCascade();
 
-            if (UNSUPPORTED_BOSSES.includes(bossName)) {
+            if (isUnsupported(bossName)) {
                 noSupportWarning.style.display = 'block';
             } else {
                 noSupportWarning.style.display = 'none';
@@ -892,7 +884,7 @@
                 }
             };
 
-            if (UNSUPPORTED_BOSSES.includes(name)) {
+            if (isUnsupported(name)) {
                 noSupportWarning.style.display = 'block';
             } else {
                 noSupportWarning.style.display = 'none';
@@ -965,7 +957,7 @@
 
                 updateFormDisabledState();
 
-                if (UNSUPPORTED_BOSSES.includes(config.name)) {
+                if (isUnsupported(config.name)) {
                     noSupportWarning.style.display = 'block';
                 } else {
                     noSupportWarning.style.display = 'none';
@@ -1346,6 +1338,13 @@
                     if (message.url === '/loadConfig') {
                         var configData = message.data.data || message.data;
                         loadConfigFromData(configData);
+                    } else if (message.url === '/bossList') {
+                        var data = message.data.data || message.data;
+                        BOSS_CASCADE_DATA = data.bossList || {};
+                        UNSUPPORTED_BOSSES = data.unsupportedBosses || [];
+                        selectedRegion = Object.keys(BOSS_CASCADE_DATA)[0] || '';
+                        renderRegionList();
+                        renderCascadeBossList();
                     } else if (message.url === '/toggleVisibility') {
                         var container = document.querySelector('.main-container');
                         if (container) {

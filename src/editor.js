@@ -46,6 +46,15 @@ function convertPathSlashesArray(nodes) {
 }
 
 /**
+ * 读取 Boss 配置列表（从外部 JSON 文件加载）
+ * @returns {Object} 包含 cascadeData 和 unsupportedBosses 的对象
+ */
+function loadBossConfig() {
+    const content = file.readTextSync('assets/config/boss-list.json');
+    return JSON.parse(content);
+}
+
+/**
  * 打开 BOSS 配置编辑器，阻塞等待用户保存并关闭
  * @description 通过 HTML 遮罩显示编辑器，注册 ~ 键监听切换显示状态，
  * 处理 /loadConfig、/loadStrategyTree 和 /saveAndClose 消息，用户保存后关闭编辑器
@@ -110,6 +119,10 @@ async function openBossEditor() {
                         log.info("已读取配置: {0} 个Boss", configData.length);
 
                         htmlMask.send(windowId, '/loadConfig', JSON.stringify(configData));
+
+                        // 读取 boss 列表配置并发送到 HTML
+                        const bossConfig = loadBossConfig();
+                        htmlMask.send(windowId, '/bossList', JSON.stringify(bossConfig));
                     } catch (err) {
                         // 先检查是否为取消异常
                         if (isCancellationError(err)) {
