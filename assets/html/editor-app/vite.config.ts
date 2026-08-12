@@ -6,8 +6,8 @@ export default defineConfig({
   base: './',
   plugins: [vue(), viteSingleFile()],
   build: {
-    outDir: 'dist',
-    emptyOutDir: true,
+    outDir: '..',
+    emptyOutDir: false,
   },
   resolve: {
     preserveSymlinks: true,
