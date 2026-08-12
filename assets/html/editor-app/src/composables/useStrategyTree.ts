@@ -12,6 +12,10 @@ export function useStrategyTree(requestFn: (url: string, data?: unknown) => Prom
   const treeData = ref<StrategyNode | null>(null)
   const selectedPath = ref('')
   const isLoading = ref(false)
+  const pendingChildren = new Map<
+    string,
+    { resolve: (children: StrategyNode[]) => void; timeoutId: ReturnType<typeof setTimeout> }
+  >()
 
   /** 加载根目录策略树（全量） */
   async function loadRootTree() {
@@ -27,12 +31,36 @@ export function useStrategyTree(requestFn: (url: string, data?: unknown) => Prom
 
   /** 加载指定目录的子节点（动态懒加载） */
   async function loadChildren(path: string): Promise<StrategyNode[]> {
-    try {
-      const result = await requestFn('/loadStrategyChildren', { path })
-      return (result as StrategyChildrenData)?.children || []
-    } catch {
-      return []
-    }
+    return new Promise((resolve) => {
+      const existing = pendingChildren.get(path)
+      if (existing) {
+        clearTimeout(existing.timeoutId)
+        existing.resolve([])
+      }
+
+      const timeoutId = setTimeout(() => {
+        pendingChildren.delete(path)
+        resolve([])
+      }, 5000)
+
+      pendingChildren.set(path, { resolve, timeoutId })
+      requestFn('/loadStrategyChildren', { path }).catch(() => {
+        const pending = pendingChildren.get(path)
+        if (!pending) return
+        clearTimeout(pending.timeoutId)
+        pendingChildren.delete(path)
+        pending.resolve([])
+      })
+    })
+  }
+
+  /** 处理运行时异步返回的子目录数据 */
+  function handleChildrenData(data: StrategyChildrenData) {
+    const pending = pendingChildren.get(data.path)
+    if (!pending) return
+    clearTimeout(pending.timeoutId)
+    pendingChildren.delete(data.path)
+    pending.resolve(data.children || [])
   }
 
   /** 处理根目录策略树数据 */
@@ -69,6 +97,7 @@ export function useStrategyTree(requestFn: (url: string, data?: unknown) => Prom
     loadRootTree,
     loadChildren,
     handleTreeData,
+    handleChildrenData,
     selectStrategy,
     formatDisplay,
   }

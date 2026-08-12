@@ -16,8 +16,15 @@ const { request, onMessage } = useHtmlMask()
 
 const cascadeData = ref<BossCascadeData>({ bossList: {}, unsupportedBosses: [] })
 
-const { treeData, selectedPath, loadRootTree, loadChildren, handleTreeData, formatDisplay } =
-  useStrategyTree(request)
+const {
+  treeData,
+  selectedPath,
+  loadRootTree,
+  loadChildren,
+  handleTreeData,
+  handleChildrenData,
+  formatDisplay,
+} = useStrategyTree(request)
 
 const {
   configs,
@@ -99,6 +106,7 @@ onMounted(() => {
         const childrenData = data as StrategyChildrenData
         if (childrenData.path && childrenData.children) {
           childrenCache.value[childrenData.path] = childrenData.children
+          handleChildrenData(childrenData)
         }
         break
       }

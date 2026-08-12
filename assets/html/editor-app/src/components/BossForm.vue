@@ -40,6 +40,11 @@ function emitUpdate<K extends keyof typeof props.form>(key: K, value: (typeof pr
   emit('update:form', { [key]: value })
 }
 
+function parseNumberInput(event: Event, fallback: number): number {
+  const value = parseInt((event.target as HTMLInputElement).value, 10)
+  return Number.isNaN(value) ? fallback : value
+}
+
 const farmModeOptions: { value: FarmMode; label: string; desc: string }[] = [
   { value: '一次性-每日限量', label: '每日限量', desc: '每天刷取限定次数，刷完为止' },
   { value: '一次性', label: '一次性刷完', desc: '连续刷取直到总次数用完' },
@@ -123,7 +128,7 @@ const farmModeOptions: { value: FarmMode; label: string; desc: string }[] = [
             min="1"
             :value="form.totalCount"
             :disabled="isMainCountDisabled"
-            @input="emitUpdate('totalCount', parseInt(($event.target as HTMLInputElement).value, 10) || 20)"
+            @input="emitUpdate('totalCount', parseNumberInput($event, 20))"
           />
         </div>
         <div class="field-group count-field">
@@ -135,7 +140,7 @@ const farmModeOptions: { value: FarmMode; label: string; desc: string }[] = [
             min="0"
             :value="form.remainingCount"
             :disabled="isMainCountDisabled"
-            @input="emitUpdate('remainingCount', parseInt(($event.target as HTMLInputElement).value, 10) || 20)"
+            @input="emitUpdate('remainingCount', parseNumberInput($event, 20))"
           />
         </div>
       </div>
@@ -149,7 +154,7 @@ const farmModeOptions: { value: FarmMode; label: string; desc: string }[] = [
             min="1"
             :value="form.dailyLimitCount"
             :disabled="isDailyCountDisabled"
-            @input="emitUpdate('dailyLimitCount', parseInt(($event.target as HTMLInputElement).value, 10) || 1)"
+            @input="emitUpdate('dailyLimitCount', parseNumberInput($event, 1))"
           />
         </div>
         <div class="field-group count-field">
@@ -161,7 +166,7 @@ const farmModeOptions: { value: FarmMode; label: string; desc: string }[] = [
             min="0"
             :value="form.dailyRemainingCount"
             :disabled="isDailyCountDisabled"
-            @input="emitUpdate('dailyRemainingCount', parseInt(($event.target as HTMLInputElement).value, 10) || 1)"
+            @input="emitUpdate('dailyRemainingCount', parseNumberInput($event, 1))"
           />
         </div>
       </div>
@@ -179,7 +184,7 @@ const farmModeOptions: { value: FarmMode; label: string; desc: string }[] = [
             type="number"
             min="30"
             :value="form.timeout"
-            @input="emitUpdate('timeout', parseInt(($event.target as HTMLInputElement).value, 10) || 240)"
+            @input="emitUpdate('timeout', parseNumberInput($event, 240))"
           />
         </div>
         <div class="field-group">

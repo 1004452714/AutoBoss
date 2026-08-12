@@ -20,6 +20,7 @@ const emit = defineEmits<{
 
 const isExpanded = ref(false)
 const isLoaded = ref(false)
+const isLoading = ref(false)
 const children = ref<StrategyNode[]>([])
 
 function displayName(): string {
@@ -33,9 +34,14 @@ function isSelected(): boolean {
 
 async function toggleFolder() {
   isExpanded.value = !isExpanded.value
-  if (isExpanded.value && !isLoaded.value) {
-    isLoaded.value = true
-    children.value = await props.onLoadFolder(props.node.name)
+  if (isExpanded.value && !isLoaded.value && !isLoading.value) {
+    isLoading.value = true
+    try {
+      children.value = await props.onLoadFolder(props.node.name)
+      isLoaded.value = true
+    } finally {
+      isLoading.value = false
+    }
   }
 }
 
@@ -59,7 +65,7 @@ function onFileClick() {
 
     <!-- 文件夹子节点 -->
     <div v-if="node.type === 'folder'" class="node-children" :class="{ collapsed: !isExpanded }">
-      <div v-if="isExpanded && !isLoaded" class="node-loading">加载中...</div>
+      <div v-if="isExpanded && isLoading" class="node-loading">加载中...</div>
       <StrategyTree
         v-for="child in children"
         :key="child.name"

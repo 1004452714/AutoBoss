@@ -14,6 +14,7 @@ export function useBossConfig(onSaveRequest: (content: string) => void) {
   const selectedIndex = ref(-1)
   const statusMessage = ref('')
   const statusError = ref(false)
+  let statusTimer: ReturnType<typeof setTimeout> | null = null
 
   /** 当前选中的配置 */
   const selectedConfig = computed<BossConfig | null>(() => {
@@ -140,8 +141,16 @@ export function useBossConfig(onSaveRequest: (content: string) => void) {
   }
 
   function showStatus(message: string, isError = false) {
+    if (statusTimer) {
+      clearTimeout(statusTimer)
+    }
     statusMessage.value = message
     statusError.value = isError
+    statusTimer = setTimeout(() => {
+      statusMessage.value = ''
+      statusError.value = false
+      statusTimer = null
+    }, 2500)
   }
 
   // 监听表单字段变化，自动同步到配置数组
