@@ -1,1 +1,17 @@
-[]
+[
+    {
+        "name": "无相之雷",
+        "totalCount": 20,
+        "remainingCount": 20,
+        "team": "不切换",
+        "returnToStatueAfterEachRound": false,
+        "farmMode": "每日重置",
+        "lastFarmTime": "20260812",
+        "dailyLimitCount": 1,
+        "dailyRemainingCount": 1,
+        "fightParam": {
+            "timeout": 240,
+            "strategyName": "boss/四神"
+        }
+    }
+]

@@ -2,3 +2,4 @@
 .vscode/*
 .trae/*
 WebView2Data/*
+assets/html/editor-app/node_modules/
